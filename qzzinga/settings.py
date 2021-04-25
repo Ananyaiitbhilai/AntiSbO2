@@ -92,17 +92,17 @@ WSGI_APPLICATION = 'qzzinga.wsgi.application'
 DATABASES = {
     
         'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'qzzinga',
-        'HOST': '127.0.0.1',
-        'PORT': '3306',
-        'USER': 'root',
-        'PASSWORD': 'root',
-        'OPTIONS' : {
-            'init_command':"SET sql_mode='STRICT_TRANS_TABLES'",}
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'd68s9bqlambipi',
+        'HOST': 'ec2-35-174-35-242.compute-1.amazonaws.com',
+        'PORT': '5432',
+        'USER': 'anurllpmzikipc',
+        'PASSWORD': 'fa575c298047f72d4ae444a52bb267ac16111262423216ea43479828bc99e1a6',
+        
         
     }
 }
+#postgres://anurllpmzikipc:fa575c298047f72d4ae444a52bb267ac16111262423216ea43479828bc99e1a6@ec2-35-174-35-242.compute-1.amazonaws.com:5432/d68s9bqlambipi
 import dj_database_url
 db_from_env = dj_database_url.config(conn_max_age=600)
 DATABASES['default'].update(db_from_env)
