@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-g$@yv87k5)c1s%wh3#d(*8fub6ct5!!c-2px*ddn!&dztd*z51
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['antisbo2.herokuapp.com/','127.0.0.1']
 
 
 # Application definition
@@ -56,6 +56,7 @@ INSTALLED_APPS += THIRD_PARTY_APPS
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
