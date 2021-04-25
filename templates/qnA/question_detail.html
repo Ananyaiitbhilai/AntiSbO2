@@ -1,0 +1,191 @@
+{% extends "base.html" %}
+{% load static %}
+{% load i18n %}
+{% load comments %}
+{% load comments_xtd %}
+{% block title %}{{question.title}}{% endblock title %}
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-3">
+            <div class="related-questions sticky-top">
+                <h6>Related Questions</h6>
+                <hr>
+                {% for question in related_questions %}
+                <div class="question mb-3">
+                    <a href="{% url 'qnA:question_detail' question.slug %}" target="_blank" class="card-link">
+                        <h6>{{question}}</h6>
+                    </a>
+                </div>
+                {% endfor %}
+
+                <div class="text-center">
+                    
+                </div>
+                <hr>
+            </div>
+        </div>
+        <div class="col-md-9">
+            <div class="question">
+                <h3 class="crim">{{question}}</h3>
+                <h6>
+                    <b>{{question.answer_set.count}} Answers</b> |
+                    {% if not is_answered %}
+                    <a href="{% url 'qnA:answer' question.slug %}" class="badge badge-danger"><img
+                            src="{% static 'imgs/qnA/pencil-square.svg' %}" alt="Answer">
+                        Answer</a>
+                    {% else %}
+                    <a href="{% url 'qnA:edit' question.slug %}" class="badge badge-primary"><img
+                            src="{% static 'imgs/qnA/pencil-square.svg' %}" alt="Edit">
+                        Edit Answer</a> |
+                    <a href="{% url 'qnA:delete' question.slug %}" class="badge badge-dark"><img
+                            src="{% static 'imgs/qnA/pencil-square.svg' %}" alt="Delete">
+                        Delete Answer</a>
+                    {% endif %}
+                    |
+                    {% if question.user != user %}
+                    {% if is_following %}
+                    <a id="follow" href="{% url 'qnA:follow-question' question.slug %}" class="badge badge-info">
+                        Unfollow Question</a>
+                    {% else %}
+                    <a id="follow" href="{% url 'qnA:follow-question' question.slug %}" class="badge badge-danger">
+                        Follow Question</a>
+                    {% endif %} |
+                    {% endif %}
+                    <a href="{% url 'qnA:answer_request' question.slug %}" class="badge badge-primary">
+                        Request Answer</a>
+                </h6>
+            </div>
+            <hr>
+            {% if question.answer_set.count == 0 %}
+            <h4 class="text-center">No Answers</h4>
+            {% else %}
+            {% for answer in question.answer_set.all %}
+            <div class="card gedf-card mb-4">
+                <div class="card-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="mr-2">
+                                {% if not answer.is_anonymous %}
+                                <a href="{% url 'users:profile' answer.user.slug %}">
+                                    <img class="rounded-circle" width="45" height="45"
+                                        src="{% if answer.user.display_img %}{{answer.user.display_img.url}} {% else %} {% static 'imgs/no_display_img.jpg' %} {% endif %}">
+                                </a>
+                                {% else %}
+                                <img class="rounded-circle" width="45" height="45"
+                                    src="{% static 'imgs/no_display_img.jpg' %}">
+                                {% endif %}
+                            </div>
+                            <div class="ml-2">
+                                <div class="p m-0">
+                                    {% if answer.is_anonymous %}
+                                    <i>Anonymous</i>
+                                    {% else %}
+                                    <b>
+                                        <a href="{% url 'users:profile' answer.user.slug %}"
+                                            class="text-decoration-none">
+                                            {{answer.user.first_name | title}} {{answer.user.last_name | title}}
+                                        </a>
+                                    </b>
+                                    {% endif %}
+                                    |
+                                    {{answer.created_date |date:'d F, Y'}}
+                                    {% if answer.created_date != answer.updated_date %}
+                                    (Edited)
+                                    {% endif %}
+                                </div>
+                                {% if not answer.is_anonymous %}
+                                <div class="h7 text-muted">{{answer.user.bio}}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="ans">
+                        {{answer.ans | safe}}
+                    </div>
+                </div>
+                {% if question.answer_set.all.0.ans %}
+                <div class="card-footer">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h4 id="score{{answer.pk}}">{{answer.vote_score}}</h4>
+                                <div class="score-form" data-pk="{{answer.pk}}"
+                                    data-page="{% if page_obj.number %}{{page_obj.number }}{% endif %}">
+                                    <input type="image" value="Up" name="up" class="Up{{answer.pk}} upvote" id="upvote"
+                                        data-pk="{{answer.pk}}" src="{% static 'imgs/qnA/caret-up-square.svg' %}" />
+                                    <input type="image" value="Down" name="down" class="Down{{answer.pk}} downvote"
+                                        data-pk="{{answer.pk}}" src="{% static 'imgs/qnA/caret-down-square.svg' %}" />
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <div style="background-color: #d7dddd;" class="rounded">
+                                <div class="dropdown">
+                                    <button class="btn btn-link dropdown-toggle" type="button" data-toggle="dropdown">
+                                    </button>
+                                    <div class="dropdown-menu dropdown-menu-right">
+                                        <a class="dropdown-item"
+                                            href="{% url 'qnA:answer_detail' answer.question.slug answer.user.slug answer.question.pk answer.user.pk %}">Share
+                                            Answer</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <hr>
+                    <div id="comments">
+                        {% if user.pk %}
+                        <div class="comment">
+                            <H4 class="text-center">Post your comment</H4>
+                            <div class="well">
+                                {% render_comment_form for answer %}
+                            </div>
+                        </div>
+                        {% else %}
+                        <a href="{% url 'users:login' %}">Login to Comment</a>
+                        {% endif %}
+                        {% get_comment_count for answer as comment_count %}
+                        {% if comment_count %}
+                        <H5 class="text-center">
+                            {% blocktrans count comment_count=comment_count %}
+                            There is {{ comment_count }} comment below.
+                            {% plural %}
+                            There are {{ comment_count }} comments below.
+                            {% endblocktrans %}
+                        </H5>
+                        {% endif %}
+
+                        {% if comment_count %}
+                        <hr />
+                        <ul class="media-list" id="comment-list">
+                            {% render_xtdcomment_tree for answer %}
+                        </ul>
+                        {% endif %}
+                    </div>
+                </div>
+                {% else %}
+                <div class="card-footer">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="ml-2">
+                                <h4><a href="{% url 'qnA:answer' question.slug %}">Answer Now</a></h4>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+            {% endfor %}
+            {% endif %}
+        </div>
+    </div>
+</div>
+<hr>
+{% endblock %}
+{% block scripts %}
+<script src="{% static 'js/vote.js' %}"></script>
+<script src="{% static 'js/follow_toggler.js' %}"></script>
+{% endblock scripts %}

@@ -1,0 +1,15 @@
+{% extends "users/base_form.html" %}
+{% load static %}
+{% block edit_form %}
+{% block img %}
+<img class="mb-4" src="{% static 'imgs/anti.JPG' %}" height="40">
+{% endblock img %}
+{% block form %}
+<form action="" method="POST">
+    {% csrf_token %}
+    {{form.as_p}}
+    {% block btn %}{% endblock btn %}
+</form>
+{% endblock form %}
+{% block msg %}{% endblock msg %}
+{% endblock edit_form %}

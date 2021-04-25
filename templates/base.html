@@ -1,0 +1,64 @@
+{% load static %}
+{% load notifications %}
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Crimson+Text:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+  {% block head %}{% endblock head %}
+  <title>{% block title %}{% endblock title %}</title>
+</head>
+
+<body style="background-color: #F1F2F2;">
+  <nav class="navbar navbar-expand-lg navbar-light mb-4" style="background-color: #f8f9fa;">
+    <div class="container">
+      <a class="navbar-brand" href="{% url 'qnA:home' %}">
+        <img src="{% static 'imgs/anti.JPG' %}" height="25" loading="lazy">
+      </a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto ml-auto">
+          <li class="nav-item">
+            <form class="form-inline my-2 my-lg-0" action="{% url 'qnA:search' %}" method="get">
+              <input class="form-control mr-sm-2" type="search" placeholder="Search Questions" name="question"
+                value="{{request.GET.question}}" required>
+              <button class="btn btn-outline-danger my-2 my-sm-0" type="submit">Search</button>
+            </form>
+          </li>
+        </ul>
+        {% block buttons %}
+        {% if request.user.is_authenticated %}
+        <div class="item">
+          <a class="mr-4 btn btn-light " href="{% url 'notifications:notifications_all' %}">
+            <span class="notify-badge">{% unread_notification request.user %}</span>
+            Notifications
+          </a>
+        </div>
+        <a class="btn btn-danger mr-4" href="{% url 'qnA:ask-question' %}" role="button">Ask Question</a>
+        <a class="btn btn-danger" href="{% url 'users:logout' %}" role="button">Logout</a>
+        {% else %}
+        <a class="btn btn-danger mr-4" href="{% url 'users:login' %}" role="button">Login</a>
+        <a class="btn btn-danger" href="{% url 'users:register' %}" role="button">Register</a>
+        {% endif %}
+        {% endblock buttons %}
+
+      </div>
+    </div>
+  </nav>
+  {% block content %}
+  {% endblock %}
+  <script src="{% static 'js/jquery.min.js' %}"></script>
+  <script src="{% static 'js/popper.min.js' %}"></script>
+  <script src="{% static 'js/bootstrap.min.js' %}"></script>
+  {% block scripts %}
+  {% endblock scripts %}
+</body>
+
+</html>

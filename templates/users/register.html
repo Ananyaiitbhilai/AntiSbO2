@@ -1,0 +1,9 @@
+{% extends "users/login_and_register.html" %}
+{% block title %}Register{% endblock title %}
+{% block btn %}
+<button class="btn btn-lg btn-danger btn-block">Register</button>
+{% endblock btn %}
+{% block msg %}
+<p class="mt-2 mb-3">Already have an account? <a href="{% url 'users:login' %}">Login</a>
+</p>
+{% endblock msg %}

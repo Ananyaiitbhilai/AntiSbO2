@@ -1,0 +1,53 @@
+{% load l10n %}
+{% load i18n %}
+{% load comments %}
+{% load comments_xtd %}
+{% load static %}
+
+{% for item in comments %}
+<div class="media">
+    <a name="c{{ item.comment.id }}"></a>
+    <a href="{% url 'users:profile' item.comment.user.slug %}">
+        <img class="rounded-circle mr-2" width="45" height="45"
+            src="{% if item.comment.user.display_img %}{{item.comment.user.display_img.url}} {% else %} {% static 'imgs/no_display_img.jpg' %} {% endif %}">
+    </a>
+    <div class="media-body">
+        <div class="comment pb-3">
+            <h6 class="mb-1 small d-flex">
+                <div class="mr-auto d-flex">
+                    <p class="font-weight-bold mr-1">
+                        <a href="{% url 'users:profile' item.comment.user.slug %}" class="text-decoration-none">
+                            {{ item.comment.name }}
+                        </a>
+                    </p>
+                    <p>on {{ item.comment.submit_date|localize }}</p>
+                </div>
+            </h6>
+            <div class="content{% if not allow_feedback and not item.comment.allow_thread %} pb-3{% endif %}">
+                {% include "includes/django_comments_xtd/comment_content.html" with content=item.comment.comment %}
+            </div>
+            {% if item.comment.allow_thread and not item.comment.is_removed %}
+
+            {% if user.is_authenticated %}
+            {% if allow_feedback %}&nbsp;&nbsp;<span class="text-muted">&bull;</span>&nbsp;&nbsp;{% endif %}<a
+                class="small mutedlink" href="{{ item.comment.get_reply_url }}">{% trans "Reply" %}</a>
+            {% else %}
+            <a href="{% url 'users:login' %}">Login to Reply</a>
+            {% endif %}
+            {% endif %}
+            <h4 id="score_comment{{item.comment.id}}">{{item.comment.vote_score}}</h4>
+            <div class="score-form" data-pk="{{item.comment.id}}" data-is-comment="True">
+                <input type="image" value="Up" name="up" class="Up_comment{{item.comment.id}} upvote" id="upvote"
+                    data-pk="{{item.comment.id}}" data-is-comment="True"
+                    src="{% static 'imgs/qnA/caret-up-square.svg' %}" />
+                <input type="image" value="Down" name="down" class="Down_comment{{item.comment.id}} downvote"
+                    data-pk="{{item.comment.id}}" data-is-comment="True"
+                    src="{% static 'imgs/qnA/caret-down-square.svg' %}" />
+            </div>
+        </div>
+        {% if not item.comment.is_removed and item.children %}
+        {% render_xtdcomment_tree with comments=item.children %}
+        {% endif %}
+    </div>
+</div>
+{% endfor %}

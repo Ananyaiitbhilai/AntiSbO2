@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-3">
+            <div class="sticky-top">
+                <h6 class="text-muted">Your Notifications</h6>
+                <hr>
+                <h6 class="mb-3"><a href="{% url 'notifications:notifications_all' %}" class=" text-decoration-none">All
+                        Notifications</a></h6>
+                <h6 class="mb-3"><a href="{% url 'notifications:notifications_ans' %}"
+                        class="text-decoration-none">Answers</a></h6>
+                <h6 class="mb-3"><a href="{% url 'notifications:notifications_followed_questions' %}"
+                        class="text-decoration-none">Followed
+                        Questions</a></h6>
+                <h6 class="mb-3"><a href="#" class="text-decoration-none">Questions Requests</a></h6>
+                <hr>
+                <div class="text-center">
+                    
+                </div>
+                <hr>
+            </div>
+        </div>
+        <div class="col-md-9">
+            <div class="text-right">
+                <input type="button" value="Dismiss All" name="dismiss" class="btn btn-danger align-right" />
+                <hr>
+            </div>
+            {% block notification %}{% endblock notification %}
+        </div>
+    </div>
+</div>
+{% endblock content %}

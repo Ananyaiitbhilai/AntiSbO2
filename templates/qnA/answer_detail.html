@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+{% load static %}
+{% load i18n %}
+{% load comments %}
+{% load comments_xtd %}
+{% block title %}{{question}}{% endblock title %}
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-3">
+            <div class="related-questions sticky-top">
+                <h6>Related Questions</h6>
+                <hr>
+                {% for question in related_questions %}
+                <div class="question mb-3">
+                    <a href="{% url 'qnA:question_detail' question.slug %}" target="_blank" class="card-link">
+                        <h6>{{question}}</h6>
+                    </a>
+                </div>
+                {% endfor %}
+
+                <div class="text-center">
+                    
+                </div>
+                <hr>
+            </div>
+        </div>
+        <div class="col-md-9">
+            <div class="question">
+                <h3 class="crim">{{user_answer.question}}</h3>
+                <h6><a href="{% url 'qnA:answer' question.slug %}" class="badge badge-danger"><img
+                            src="{% static 'imgs/qnA/pencil-square.svg' %}" alt="Answer">
+                        Answer</a> |
+                    <b>{{user_answer.user.first_name}} {{user_answer.user.last_name}}'s Answer</b>
+                </h6>
+            </div>
+            <hr>
+            <div class="card gedf-card mb-4">
+                <div class="card-body">
+                    <div class="ans">
+                        {{user_answer.ans | safe}}
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="mr-2">
+                                <img class="rounded-circle" width="45" src="https://picsum.photos/50/50" alt="">
+                            </div>
+                            <div class="ml-2">
+                                <div class="p m-0">
+                                    <b>
+                                        {% if user_answer.is_anonymous %}
+                                        <i>Anonymous</i>
+                                        {% else %}
+                                        {{user_answer.user.first_name}} {{user_answer.user.last_name}}
+                                        {% endif %}
+                                    </b> |
+                                    {{question.created_date |date:'d F, Y'}}
+                                    {% if user_answer.created_date != user_answer.updated_date %}
+                                    (Edited)
+                                    {% endif %}
+                                </div>
+                                <div class="h7 text-muted">{{user_answer.user.bio}}</div>
+                            </div>
+                        </div>
+                        <div>
+                            <h4 id="score{{question.pk}}">{{question.vote_score}}</h4>
+                            <div class="score-form" data-pk="{{question.pk}}"
+                                data-page="{% if page_obj.number %}{{page_obj.number }}{% endif %}">
+                                <input type="image" value="Up" name="up" class="Up{{question.pk}} upvote" id="upvote"
+                                    data-pk="{{question.pk}}" src="{% static 'imgs/qnA/caret-up-square.svg' %}" />
+                                <input type="image" value="Down" name="down" class="Down{{question.pk}} downvote"
+                                    data-pk="{{question.pk}}" src="{% static 'imgs/qnA/caret-down-square.svg' %}" />
+                            </div>
+                        </div>
+                    </div>
+                    <hr>
+                    <div id="comments">
+                        {% if user.pk %}
+                        <div class="comment">
+                            <H4 class="text-center">Post your comment</H4>
+                            <div class="well">
+                                {% render_comment_form for user_answer %}
+                            </div>
+                        </div>
+                        {% else %}
+                        <a href="{% url 'users:login' %}">Login to Comment</a>
+                        {% endif %}
+                        {% get_comment_count for user_answer as comment_count %}
+                        {% if comment_count %}
+                        <H5 class="text-center">
+                            {% blocktrans count comment_count=comment_count %}
+                            There is {{ comment_count }} comment below.
+                            {% plural %}
+                            There are {{ comment_count }} comments below.
+                            {% endblocktrans %}
+                        </H5>
+                        {% endif %}
+
+                        {% if comment_count %}
+                        <hr />
+                        <ul class="media-list" id="comment-list">
+                            {% render_xtdcomment_tree for user_answer %}
+                        </ul>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<hr>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="{% static 'js/vote.js' %}"></script>
+{% endblock %}

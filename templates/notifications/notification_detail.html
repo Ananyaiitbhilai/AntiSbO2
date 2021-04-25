@@ -1,0 +1,80 @@
+{% extends "notifications/base.html" %}
+{% load static %}
+{% block title %}Notification Detail{% endblock title %}
+{% block notification %}
+<div class="col-md-9">
+    <div class="card">
+        <div class="card-header">
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="mr-2">
+                        <img class="rounded-circle" width="45" height="45"
+                            src="{% if question.user.display_img %}{{question.user.display_img.url}} {% else %} {% static 'imgs/no_display_img.jpg' %} {% endif %}">
+                    </div>
+                    <div class="ml-2">
+                        <div class="p m-0">
+                            <b>
+                                <a href="{% url 'users:profile' question.user.slug %}" class="text-decoration-none">
+                                    {{question.user.first_name | title}}
+                                    {{question.user.last_name | title}}
+                                </a>
+                            </b> |
+                            {{question.created_date |date:'d F, Y'}}
+                        </div>
+                        <div class="h7 text-muted">{{question.user.bio}}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <a href="{% url 'qnA:question_detail' question.slug %}" target="_blank"
+                class="card-link text-decoration-none">
+                <b>
+                    <h4 class="card-title crim">{{question}}</h4>
+                </b>
+            </a>
+            <a href="{% url 'qnA:question_detail' question.slug %}" target="_blank"
+                style="text-decoration: none; color:black;" class="text-decoration-none">
+                <div class="ans">
+                    {{ans.ans | safe | truncatewords_html:60}}
+                </div>
+            </a>
+        </div>
+        <div class=" card-footer">
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="d-flex justify-content-between align-items-center">
+                    {% if is_following_user_questions %}
+                    <h4><a href="{% url 'qnA:answer' question.slug %}" class="text-decoration-none">Answer Now</a></h4>
+                    {% elif not is_requested_question or is_following_user_answers %}
+                    <div class="mr-2">
+                        <img class="rounded-circle" width="45" height="45"
+                            src="{% if ans.user.display_img %}{{ans.user.display_img.url}} {% else %} {% static 'imgs/no_display_img.jpg' %} {% endif %}">
+                    </div>
+                    <div class="ml-2">
+                        <div class="p m-0">
+                            {% if ans.is_anonymous %}
+                            <i>Anonymous</i>
+                            {% else %}
+                            <b>
+                                <a href="{% url 'users:profile' ans.user.slug %}" class="text-decoration-none">
+                                    {{ans.user.first_name | title}}
+                                    {{ans.user.last_name | title}}
+                                </a>
+                            </b> |
+                            {{ans.created_date|date:'d F, Y'}}
+                            {% if ans.created_date != ans.updated_date %}
+                            (Edited)
+                            {% endif %}
+                            {% endif %}
+                        </div>
+                        <div class="h7 text-muted">{{ans.user.bio}}</div>
+                    </div>
+                    {% else %}
+                    <h4><a href="{% url 'qnA:answer' question.slug %}" class="text-decoration-none">Answer Now</a></h4>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock notification %}
